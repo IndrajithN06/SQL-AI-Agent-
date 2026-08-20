@@ -9,3 +9,4 @@ class AgentState(TypedDict, total=False):
     query_result: List[Dict[str, Any]]
     final_answer: str
     retry_count: int
+    answer: str

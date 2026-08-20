@@ -3,11 +3,16 @@ from app.graph import build_graph
 graph = build_graph()
 
 
+question = input("\nAsk a question: ").strip()
+
+if not question:
+    print("Question cannot be empty.")
+    raise SystemExit(1)
+
 initial_state = {
-    "question": "What are the top 5 products by sales?",
+    "question": question,
     "retry_count": 0,
 }
-
 
 result = graph.invoke(initial_state)
 
@@ -29,3 +34,6 @@ print(result.get("sql_error"))
 print("\nQuery Result:")
 for row in result.get("query_result", []):
     print(row)
+
+print("\nNatural Language Answer:")
+print(result.get("answer"))

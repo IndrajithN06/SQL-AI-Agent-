@@ -44,6 +44,7 @@ IMPORTANT SQL SERVER RULES:
 - SELECT statements only.
 - NEVER use LIMIT.
 - NEVER use MySQL or PostgreSQL syntax.
+- When using multiple tables, always use table aliases and qualify every column with its table alias.
 - To return the first N rows, use TOP N immediately after SELECT.
 - Correct example:
   SELECT TOP 5 ProductName FROM Products ORDER BY ProductName
@@ -246,6 +247,7 @@ SQL SERVER RULES:
 - Generate SQL Server syntax only.
 - Generate SELECT statements only.
 - If limiting rows with TOP N, TOP N MUST appear immediately after SELECT.
+- When using multiple tables, always use table aliases and qualify every column with its table alias.
 - NEVER put TOP N after ORDER BY.
 - Do not use LIMIT.
 - SQL Server uses TOP for limiting rows.
@@ -295,4 +297,39 @@ Do not use markdown code fences.
         "sql_error": "",
         "sql_valid": False,
         "retry_count": retry_count,
+    }
+
+
+def answer_node(state: AgentState) -> AgentState:
+    question = state["question"]
+    query_result = state.get("query_result", [])
+
+    prompt = f"""
+You are a data analyst assistant.
+
+Answer the user's question using ONLY the query result provided below.
+
+USER QUESTION:
+{question}
+
+QUERY RESULT:
+{query_result}
+
+RULES:
+- Answer in clear, natural language.
+- Do not invent facts that are not present in the query result.
+- Mention important values from the result when appropriate.
+- If multiple rows are present, summarize them clearly.
+- Keep the answer concise.
+- Do not generate SQL.
+- Return ONLY the final answer to the user.
+"""
+
+    response = llm.invoke(prompt)
+
+    answer = response.content.strip()
+
+    return {
+        **state,
+        "answer": answer,
     }
