@@ -6,6 +6,7 @@ from app.nodes import (
     validate_sql_node,
     execute_sql_node,
     self_correct_sql_node,
+    answer_node,
 )
 
 
@@ -38,7 +39,7 @@ def build_graph():
     graph.add_node("validate_sql", validate_sql_node)
     graph.add_node("execute_sql", execute_sql_node)
     graph.add_node("self_correct", self_correct_sql_node)
-
+    graph.add_node("answer", answer_node)
     graph.add_edge(START, "generate_sql")
 
     graph.add_edge("generate_sql", "validate_sql")
@@ -58,11 +59,12 @@ def build_graph():
         route_after_execution,
         {
             "self_correct": "self_correct",
-            "success": END,
+            "success": "answer",
             "failure": END,
         },
     )
 
     graph.add_edge("self_correct", "validate_sql")
+    graph.add_edge("answer", END)
 
     return graph.compile()
